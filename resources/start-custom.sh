@@ -6,8 +6,10 @@ fi
 
 test -z "$GIT_EXAMPLE_NOTEBOOKS" || git clone "$GIT_EXAMPLE_NOTEBOOKS"
 
-if [ -f /tmp/zsh-in-docker.sh ]; then
-  bash /tmp/zsh-in-docker.sh -p git
+if [ -f /tmp/oh-my-zsh-install.sh ]; then
+  sh /tmp/oh-my-zsh-install.sh --unattended --skip-chsh
+  echo >> /home/${NB_USER}/.bashrc
+  echo '[ -z "$PS1" ] && zsh' >> /home/${NB_USER}/.bashrc
 fi
 
 if conda --help > /dev/null 2>&1; then

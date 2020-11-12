@@ -48,6 +48,6 @@ RUN curl -LO "${KUBECTL_URL}" \
     && bash InstallAzureCLIDeb \
   && \
     wget -q "${OH_MY_ZSH_URL}" -O /tmp/oh-my-zsh-install.sh \
-    && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c -
+    && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c
 
 # Have to use the zsh-installer in the entrypoint!

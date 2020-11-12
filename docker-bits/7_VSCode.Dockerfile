@@ -30,13 +30,16 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     && tar xvf ${CODESERVER}.tar.gz \
     && mv ${CODESERVER}/code-server /usr/local/bin/ \
     && rm -rf code-server*
-    #&& pip install jupyter-vscode-proxy jupyter-server-proxy \
-    #&& jupyter serverextension enable --py jupyter_server_proxy \
-    #&& jupyter labextension install @jupyterlab/server-proxy \
-    #&& jupyter lab build \
-    #&& rm -rf /home/$NB_USER/.cache/yarn \
-    #&& rm -rf /home/$NB_USER/.node-gyp \
-    #&& fix-permissions /home/$NB_USER
+
+USER $NB_USER
+RUN pip install jupyter-vscode-proxy jupyter-server-proxy \
+    && jupyter serverextension enable --py jupyter_server_proxy \
+    && jupyter labextension install @jupyterlab/server-proxy \
+    && jupyter lab build \
+    && rm -rf /home/$NB_USER/.cache/yarn \
+    && rm -rf /home/$NB_USER/.node-gyp \
+    && fix-permissions /home/$NB_USER \
+    && echo "VSCode installed."
 
 COPY landing_page/* /usr/share/nginx/html/
 COPY nginx/*        /etc/nginx/
