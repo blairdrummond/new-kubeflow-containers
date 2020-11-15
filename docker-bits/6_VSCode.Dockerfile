@@ -35,6 +35,7 @@ USER $NB_USER
 RUN pip install jupyter-server-proxy \
     && pip install git+https://github.com/blairdrummond/vscode-binder \
     && pip install git+https://github.com/illumidesk/jupyter-pluto-proxy \
+    && pip install git+https://github.com/illumidesk/jupyter-pgweb-proxy.git \
     && julia -e 'import Pkg; Pkg.update(); Pkg.add("Pluto")' \
     && chmod -R go+rx "${CONDA_DIR}/share/jupyter" \
     && rm -rf "${HOME}/.local" \

@@ -25,7 +25,7 @@ jupyter notebook --notebook-dir=/home/${NB_USER} \
                  --ip=0.0.0.0 \
                  --no-browser \
                  --port=8888 \
-                 --NotebookApp.terminado_settings='{"shell_command":"zsh"}' \
+                 --NotebookApp.terminado_settings='{"shell_command":["zsh"]}' \
                  --NotebookApp.token='' \
                  --NotebookApp.password='' \
                  --NotebookApp.allow_origin='*' \
