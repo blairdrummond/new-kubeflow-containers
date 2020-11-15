@@ -46,6 +46,7 @@ RUN curl -LO "${KUBECTL_URL}" \
     curl -sLO https://aka.ms/InstallAzureCLIDeb \
     && echo "${AZCLI_SHA} InstallAzureCLIDeb" | sha256sum -c - \
     && bash InstallAzureCLIDeb \
+    && rm InstallAzureCLIDeb \
   && \
     wget -q "${OH_MY_ZSH_URL}" -O /tmp/oh-my-zsh-install.sh \
     && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c

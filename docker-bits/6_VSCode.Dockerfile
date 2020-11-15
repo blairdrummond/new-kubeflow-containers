@@ -32,7 +32,13 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     && rm -rf code-server*
 
 USER $NB_USER
-RUN pip install jupyter-vscode-proxy jupyter-server-proxy \
+RUN pip install jupyter-server-proxy \
+    && pip install git+https://github.com/blairdrummond/vscode-binder \
+    && pip install git+https://github.com/illumidesk/jupyter-pluto-proxy \
+    && julia -e 'import Pkg; Pkg.update(); Pkg.add("Pluto")' \
+    && chmod -R go+rx "${CONDA_DIR}/share/jupyter" \
+    && rm -rf "${HOME}/.local" \
+    && fix-permissions "${JULIA_PKGDIR}" "${CONDA_DIR}/share/jupyter" \
     && jupyter serverextension enable --py jupyter_server_proxy \
     && jupyter labextension install @jupyterlab/server-proxy \
     && jupyter lab build \

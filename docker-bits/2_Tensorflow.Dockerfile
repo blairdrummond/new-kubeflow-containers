@@ -1,6 +1,5 @@
 # Install Tensorflow
 RUN conda config --set channel_priority false && \
-    conda create -n torch python=3.9 && \
     conda install --quiet --yes \
       'tensorflow' \
       'keras' \
