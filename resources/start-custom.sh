@@ -6,21 +6,26 @@ fi
 
 test -z "$GIT_EXAMPLE_NOTEBOOKS" || git clone "$GIT_EXAMPLE_NOTEBOOKS"
 
-if [ -f /tmp/oh-my-zsh-install.sh ]; then
-  sh /tmp/oh-my-zsh-install.sh --unattended --skip-chsh
-  echo >> /home/${NB_USER}/.bashrc
-  echo '[ -z "$PS1" ] && zsh' >> /home/${NB_USER}/.bashrc
-fi
+# Configure the shell! If not already configured.
+if [ ! -f /home/$NB_USER/.zsh-installed ]; then
+    if [ -f /tmp/oh-my-zsh-install.sh ]; then
+      sh /tmp/oh-my-zsh-install.sh --unattended --skip-chsh
+    fi
 
-if conda --help > /dev/null 2>&1; then
-  conda init bash
-  conda init zsh
+    if conda --help > /dev/null 2>&1; then
+      conda init bash
+      conda init zsh
+    fi
+
+    cat /tmp/helpers.zsh >> /home/$NB_USER/.zshrc
+    touch /home/$NB_USER/.zsh-installed
 fi
 
 jupyter notebook --notebook-dir=/home/${NB_USER} \
                  --ip=0.0.0.0 \
                  --no-browser \
                  --port=8888 \
+                 --NotebookApp.terminado_settings='{"shell_command":"zsh"}' \
                  --NotebookApp.token='' \
                  --NotebookApp.password='' \
                  --NotebookApp.allow_origin='*' \
