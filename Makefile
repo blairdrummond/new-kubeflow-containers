@@ -9,6 +9,8 @@ TMP := .tmp
 Tensorflow-CUDA := 11.1
 PyTorch-CUDA    := 11.0
 
+REGISTRY := k8scc01covidacr.azurecr.io
+
 .PHONY: clean .output all
 
 clean:
@@ -65,4 +67,12 @@ JupyterLab VSCode: PyTorch Tensorflow CPU
 			$(SRC)/6_$(@).Dockerfile \
 			$(SRC)/∞_CMD.Dockerfile \
 		>   $(OUT)/$@-$${type}/Dockerfile; \
+	done
+
+
+build:
+	for d in output/*; do \
+		tag=$$(basename $$d | tr '[:upper:]' '[:lower:]'); \
+		echo $$tag; \
+		(cd $$d; docker build . -t kubeflow-$$tag); \
 	done

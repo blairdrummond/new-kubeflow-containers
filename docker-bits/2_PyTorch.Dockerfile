@@ -4,6 +4,7 @@ RUN conda config --set channel_priority false && \
     conda install -n torch --quiet --yes \
       'pytorch-gpu' \
       'torchvision' \
+      'ipykernel' \
     && \
     conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \

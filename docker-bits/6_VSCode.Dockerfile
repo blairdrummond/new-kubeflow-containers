@@ -36,6 +36,7 @@ RUN pip install jupyter-server-proxy \
     && pip install git+https://github.com/blairdrummond/vscode-binder \
     && pip install git+https://github.com/illumidesk/jupyter-pluto-proxy \
     && pip install git+https://github.com/illumidesk/jupyter-pgweb-proxy.git \
+    && conda install nb_conda_kernels \
     && julia -e 'import Pkg; Pkg.update(); Pkg.add("Pluto")' \
     && chmod -R go+rx "${CONDA_DIR}/share/jupyter" \
     && rm -rf "${HOME}/.local" \
@@ -43,8 +44,10 @@ RUN pip install jupyter-server-proxy \
     && jupyter serverextension enable --py jupyter_server_proxy \
     && jupyter labextension install @jupyterlab/server-proxy \
     && jupyter lab build \
+    && conda clean --all -f -y \
     && rm -rf /home/$NB_USER/.cache/yarn \
     && rm -rf /home/$NB_USER/.node-gyp \
+    && fix-permissions $CONDA_DIR \
     && fix-permissions /home/$NB_USER \
     && echo "VSCode installed."
 

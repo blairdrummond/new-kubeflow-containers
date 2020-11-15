@@ -1,7 +1,8 @@
 # Install Tensorflow
 RUN conda config --set channel_priority false && \
-    conda install --quiet --yes \
-      'tensorflow' \
+    conda create -n tensorflow && \
+    conda install -n tensorflow --quiet --yes \
+      'tensorflow-gpu' \
       'keras' \
     && \
     conda clean --all -f -y && \
