@@ -56,7 +56,7 @@ jobs:
 
     # Container build and push to a Azure Container registry (ACR)
     - name: Build image
-    - run: |
+      run: |
         sudo apt-get install --yes make
         make all
         cd ${{ matrix.notebook }}
