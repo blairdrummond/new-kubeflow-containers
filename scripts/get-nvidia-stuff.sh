@@ -1,11 +1,22 @@
-#!/bin/sh
+#!/bin/bash
+
+VERSION=11.0
+
+# Use an argument if available.
+if test -n "$1"; then
+    VERSION=$1
+fi
+
+if ! echo "$VERSION" | grep -q '^[0-9.]*$'; then
+    echo "$VERSION seems invalid. Should be numeric. E.g. 11.0 " >&2
+    exit 1
+fi
 
 REPO=https://gitlab.com/nvidia/container-images/cuda/-/raw/master/dist
-VERSION=11.0
 CUDNN=cudnn8
 OS=ubuntu18.04-x86_64
 
-cat <<EOF | grep -v '^FROM' | grep -v '^ARG IMAGE_NAME' | grep -v 'LABEL maintainer' > 1_CUDA-$VERSION.Dockerfile
+cat <<EOF | grep -v '^\(FROM\|ARG IMAGE_NAME\|LABEL maintainer\)' # > 1_CUDA-$VERSION.Dockerfile
 # Cuda stuff for v$VERSION
 
 ## $REPO/$VERSION/$OS/base/Dockerfile

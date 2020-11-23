@@ -4,6 +4,9 @@
 # All the content is in `docker-bits`; this Makefile
 # just builds target dockerfiles by combining the dockerbits.
 
+# The docker-stacks tag
+COMMIT := 42f4c82a07ff
+
 Tensorflow-CUDA := 11.1
 PyTorch-CUDA    := 11.0
 
@@ -35,18 +38,49 @@ build:
 		cd ../../; \
 	done;
 
-######################
-###    R-Studio	   ###
-######################
+#############################
+###    Generated Files    ###
+#############################
+get-commit:
+	@echo $(COMMIT)
+
+generate-CUDA:
+	bash scripts/get-nvidia-stuff.sh $(TensorFlow-CUDA) > $(SRC)/1_CUDA-$(TensorFlow-CUDA).Dockerfile
+	bash scripts/get-nvidia-stuff.sh $(TensorFlow-CUDA) > $(SRC)/1_CUDA-$(TensorFlow-CUDA).Dockerfile
+
+generate-Spark:
+	bash scripts/get-spark-stuff.sh --commit $(COMMIT)  > $(SRC)/2_Spark.Dockerfile
+
+
+#############################
+###   Bases GPU & Spark   ###
+#############################
+
+# Configure the "Bases".
+#
+# NOTE: At the time of writing, CPU is an alias for Spark.
+PyTorch Tensorflow: .output
+	$(CAT) \
+		$(SRC)/0_CPU.Dockerfile \
+		$(SRC)/1_CUDA-$($(@)-CUDA).Dockerfile \
+		$(SRC)/2_$@.Dockerfile \
+	> $(TMP)/$@.Dockerfile
+
+Spark CPU: .output
+	cp $(SRC)/0_$@.Dockerfile $(TMP)/$@.Dockerfile
+
+
+#########################################
+###    R-Studio, Jupyter & VS-Code    ###
+#########################################
 
 # Only one output version
-RStudio: .output
+RStudio: Spark
 	mkdir -p $(OUT)/$@
 	cp -r resources/* $(OUT)/$@
 
 	$(CAT) \
-		$(SRC)/0_Base.Dockerfile \
-		$(SRC)/2_Spark.Dockerfile \
+		$(TMP)/$<.Dockerfile \
 		$(SRC)/3_Kubeflow.Dockerfile \
 		$(SRC)/4_CLI.Dockerfile \
 		$(SRC)/5_DB-Drivers.Dockerfile \
@@ -54,30 +88,7 @@ RStudio: .output
 		$(SRC)/∞_CMD.Dockerfile \
 	>   $(OUT)/$@/Dockerfile
 
-##############################
-###    Python & Jupyter    ###
-##############################
-
-# Configure the "Bases".
-#
-# NOTE: At the time of writing, CPU is an alias for Spark.
-PyTorch Tensorflow CPU: .output
-	# Configure for either PyTorch or Tensorflow
-	cp $(SRC)/0_Base.Dockerfile $(TMP)/$@.Dockerfile
-
-	# Handle the GPU/CUDA business.
-	if [ "$@" = PyTorch ] || [ "$@" = Tensorflow ]; then \
-		$(CAT) \
-			$(SRC)/1_CUDA-$($(@)-CUDA).Dockerfile \
-		>> $(TMP)/$@.Dockerfile; \
-	fi
-
-	$(CAT) \
-		$(SRC)/2_$@.Dockerfile \
-	>> $(TMP)/$@.Dockerfile
-
-
-JupyterLab VSCode: PyTorch Tensorflow CPU
+JupyterLab VSCode: PyTorch Tensorflow CPU Spark
 
 	for type in $^; do \
 		mkdir -p $(OUT)/$@-$${type}; \

@@ -62,7 +62,7 @@ EOF
 
 
 
-cat <<EOF | grep -v '^\(FROM\|ARG BASE_CONTAINER\|LABEL maintainer\)' > 2_Spark.Dockerfile
+cat <<EOF | grep -v '^\(FROM\|ARG BASE_CONTAINER\|LABEL maintainer\)' # > 2_Spark.Dockerfile
 # Spark stuff
 
 $(get_file pyspark-notebook $COMMIT)

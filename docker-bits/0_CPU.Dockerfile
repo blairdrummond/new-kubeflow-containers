@@ -1,5 +1,6 @@
-FROM jupyter/datascience-notebook:42f4c82a07ff
-# FROM jupyter/minimal-notebook:42f4c82a07ff
+ARG BASE_VERSION=42f4c82a07ff
+FROM jupyter/datascience-notebook:$BASE_VERSION
+
 USER root
 ENV PATH="/home/jovyan/.local/bin/:${PATH}"
 

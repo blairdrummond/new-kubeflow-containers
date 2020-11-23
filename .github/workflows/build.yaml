@@ -67,10 +67,11 @@ jobs:
       run: |
         sudo apt-get install --yes make
         make all
+        COMMIT=$(make get-commit)
         IMAGE_NAME="$(echo ${{ matrix.notebook }} | tr '[:upper:]' '[:lower:]')"
         REGISTRY=${{ env.REGISTRY }}
         cd output/${{ matrix.notebook }}
-        docker build . -t $REGISTRY/$IMAGE_NAME:${{ github.sha }}
+        docker build . --build-arg BASE_VERSION=$COMMIT -t $REGISTRY/$IMAGE_NAME:${{ github.sha }}
         docker push $REGISTRY/$IMAGE_NAME:${{ github.sha }}
         echo
         docker tag $REGISTRY/$IMAGE_NAME:${{ github.sha }} $REGISTRY/$IMAGE_NAME:${GITHUB_REF#refs/*/}
