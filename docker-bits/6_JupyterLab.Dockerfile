@@ -13,12 +13,6 @@ RUN pip install --quiet \
       'python-language-server==0.31.10' \
     && \
     conda install --quiet --yes \
-      'pyarrow==0.17.1' \
-      'r-tidyr==1.1.2' \
-      'r-jsonlite==1.7.1' \
-      'r-rstan==2.21.2' \
-    && \
-    conda install --quiet --yes \
       -c plotly \
       'jupyter-dash==0.3.0' \
     && \
@@ -48,8 +42,7 @@ RUN pip install --quiet \
   fix-permissions /home/$NB_USER
 
 # Solarized Theme and Cell Execution Time
-RUN echo '{ "@jupyterlab/apputils-extension:themes": {"theme": "JupyterLab Dark"}, "@jupyterlab/notebook-extension:tracker": {"recordTiming": true}}' > /opt/conda/share/jupyter/lab/settings/overrides.json && \
-    fix-permissions /home/$NB_USER
+COPY jupyterlab-overrides.json /opt/conda/share/jupyter/lab/settings/overrides.json
 
 ENV DEFAULT_JUPYTER_URL=/lab
 ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/statcan/jupyter-notebooks
