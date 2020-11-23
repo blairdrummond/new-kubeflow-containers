@@ -39,39 +39,42 @@ build:
 ###    R-Studio	   ###
 ######################
 
-# Skip GPU & Python
+# Only one output version
 RStudio: .output
 	mkdir -p $(OUT)/$@
 	cp -r resources/* $(OUT)/$@
 
 	$(CAT) \
 		$(SRC)/0_Base.Dockerfile \
+		$(SRC)/2_Spark.Dockerfile \
 		$(SRC)/3_Kubeflow.Dockerfile \
 		$(SRC)/4_CLI.Dockerfile \
 		$(SRC)/5_DB-Drivers.Dockerfile \
 		$(SRC)/6_$(@).Dockerfile \
 		$(SRC)/∞_CMD.Dockerfile \
 	>   $(OUT)/$@/Dockerfile
-	@echo
-	@echo "$(@)-CPU.Dockerfile written."
-	@echo
-	@echo
 
 ##############################
 ###    Python & Jupyter    ###
 ##############################
 
-# Configure the "Bases"
+# Configure the "Bases".
+#
+# NOTE: At the time of writing, CPU is an alias for Spark.
 PyTorch Tensorflow CPU: .output
 	# Configure for either PyTorch or Tensorflow
 	cp $(SRC)/0_Base.Dockerfile $(TMP)/$@.Dockerfile
 
-	if ! [ "$@" = CPU ]; then \
+	# Handle the GPU/CUDA business.
+	if [ "$@" = PyTorch ] || [ "$@" = Tensorflow ]; then \
 		$(CAT) \
 			$(SRC)/1_CUDA-$($(@)-CUDA).Dockerfile \
-			$(SRC)/2_$@.Dockerfile \
 		>> $(TMP)/$@.Dockerfile; \
 	fi
+
+	$(CAT) \
+		$(SRC)/2_$@.Dockerfile \
+	>> $(TMP)/$@.Dockerfile
 
 
 JupyterLab VSCode: PyTorch Tensorflow CPU

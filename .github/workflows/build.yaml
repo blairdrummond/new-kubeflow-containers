@@ -18,8 +18,9 @@ on:
 
 # Environment variables available to all jobs and steps in this workflow
 env:
-  # REGISTRY_NAME: k8scc01covidacr
-  REGISTRY_NAME: blairdrummond
+  REGISTRY: blairdrummond
+  # REGISTRY: k8scc01covidacr.azurecr.io
+  REGISTRY_NAME: k8scc01covidacr
   CLUSTER_NAME: k8s-cancentral-01-covid-aks
   CLUSTER_RESOURCE_GROUP: k8s-cancentral-01-covid-aks
 jobs:
@@ -46,6 +47,13 @@ jobs:
     #    username: ${{ secrets.REGISTRY_USERNAME }}
     #    password: ${{ secrets.REGISTRY_PASSWORD }}
 
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+
     - name: Free disk space
       run: |
         sudo swapoff -a
@@ -59,19 +67,19 @@ jobs:
       run: |
         sudo apt-get install --yes make
         make all
+        IMAGE_NAME="$(echo ${{ matrix.notebook }} | tr '[:upper:]' '[:lower:]')"
+        REGISTRY=${{ env.REGISTRY }}
         cd output/${{ matrix.notebook }}
-        echo docker build . -t $(echo ${{ matrix.notebook }} | tr '[:upper:]' '[:lower:]')
-        docker build . -t $(echo ${{ matrix.notebook }} | tr '[:upper:]' '[:lower:]')
-        echo docker build -f base-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${{ github.sha }} base-notebook/cpu
-        echo docker push ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${{ github.sha }}
-        echo docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${GITHUB_REF#refs/*/}
-        echo docker push ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${GITHUB_REF#refs/*/}
-        docker system prune -f -a
+        docker build . -t $REGISTRY/$IMAGE_NAME:${{ github.sha }}
+        docker push $REGISTRY/$IMAGE_NAME:${{ github.sha }}
+        echo
+        docker tag $REGISTRY/$IMAGE_NAME:${{ github.sha }} $REGISTRY/$IMAGE_NAME:${GITHUB_REF#refs/*/}
+        docker push $REGISTRY/$IMAGE_NAME:${GITHUB_REF#refs/*/}
         cd -
 
-   #  # Scan image for vulnerabilities
-   #  - uses: Azure/container-scan@v0
-   #    with:
-   #      image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${{ github.sha }}
-   #      severity-threshold: CRITICAL
-   #      run-quality-checks: false
+    # Scan image for vulnerabilities
+    - uses: Azure/container-scan@v0
+      with:
+        image-name: ${{ env.REGISTRY }}/base-notebook-cpu:${{ github.sha }}
+        severity-threshold: CRITICAL
+        run-quality-checks: false

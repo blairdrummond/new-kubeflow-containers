@@ -8,6 +8,7 @@
 │   ├── 0_Base.Dockerfile
 │   ├── 1_CUDA-11.0.Dockerfile
 │   ├── 1_CUDA-11.1.Dockerfile
+│   ├── 2_Spark.Dockerfile
 │   ├── 2_PyTorch.Dockerfile
 │   ├── 2_Tensorflow.Dockerfile
 │   ├── 3_Kubeflow.Dockerfile
@@ -27,7 +28,7 @@
 │   ├── README.md
 │   └── start-custom.sh
 │
-├── scripts                     # Helper Scripts
+├── scripts                     # Helper Scripts (NOT automated.)
 │   ├── CHECKSUMS
 │   ├── checksums.sh
 │   ├── get-nvidia-stuff.sh
