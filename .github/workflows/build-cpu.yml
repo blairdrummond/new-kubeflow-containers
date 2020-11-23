@@ -59,7 +59,7 @@ jobs:
       run: |
         sudo apt-get install --yes make
         make all
-        cd ${{ matrix.notebook }}
+        cd output/${{ matrix.notebook }}
         echo docker build . -t $(echo ${{ matrix.notebook }} | tr '[:upper:]' '[:lower:]')
         docker build . -t $(echo ${{ matrix.notebook }} | tr '[:upper:]' '[:lower:]')
         echo docker build -f base-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${{ github.sha }} base-notebook/cpu
