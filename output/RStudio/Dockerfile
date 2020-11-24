@@ -1,3 +1,8 @@
+
+###############################
+###  .tmp/Spark.Dockerfile
+###############################
+
 ARG BASE_VERSION=42f4c82a07ff
 FROM jupyter/all-spark-notebook:$BASE_VERSION
 
@@ -7,6 +12,10 @@ ENV PATH="/home/jovyan/.local/bin/:${PATH}"
 RUN apt-get update --yes \
     && apt-get install --yes language-pack-fr \
     && rm -rf /var/lib/apt/lists/*
+
+###############################
+###  docker-bits/3_Kubeflow.Dockerfile
+###############################
 
 RUN pip --no-cache-dir install --quiet \
       'kfp==1.0.0' \
@@ -24,6 +33,10 @@ RUN pip --no-cache-dir install --quiet \
 RUN pip --no-cache-dir install --quiet \
       'fire==0.3.1' \
       'git+https://github.com/kubeflow/pipelines@1d86111d8f152d3ed7506ea59cee1bfbc28abbf9#egg=kfp-azure-databricks&subdirectory=samples/contrib/azure-samples/kfp-azure-databricks'
+
+###############################
+###  docker-bits/4_CLI.Dockerfile
+###############################
 
 USER root
 
@@ -83,6 +96,10 @@ RUN curl -LO "${KUBECTL_URL}" \
 # Have to use the zsh-installer in the entrypoint!
 COPY helpers.zsh /tmp/helpers.zsh
 
+###############################
+###  docker-bits/5_DB-Drivers.Dockerfile
+###############################
+
 # ODBC drivers
 RUN apt-get update && \
     apt-get install -y alien unixodbc unixodbc-dev && \
@@ -99,6 +116,10 @@ RUN \
   unzip pgweb_linux_amd64.zip -d /usr/bin && \
   mv /usr/bin/pgweb_linux_amd64 /usr/bin/pgweb && \
   rm -f pgweb_linux_amd64.zip
+
+###############################
+###  docker-bits/6_RStudio.Dockerfile
+###############################
 
 # install rstudio-server
 ARG RSTUDIO_VERSION=1.1.463
@@ -135,6 +156,10 @@ RUN python3 -m pip install \
 ENV DEFAULT_JUPYTER_URL="/rstudio"
 ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/statcan/R-notebooks.git
 
+###############################
+###  docker-bits/∞_CMD.Dockerfile
+###############################
+
 # Configure container startup
 
 WORKDIR /home/$NB_USER
@@ -143,4 +168,3 @@ COPY start-custom.sh /usr/local/bin/
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]
 CMD ["start-custom.sh"]
-

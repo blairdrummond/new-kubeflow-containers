@@ -36,11 +36,12 @@ RUN pip install jupyter-server-proxy \
     && pip install git+https://github.com/blairdrummond/vscode-binder \
     && pip install git+https://github.com/illumidesk/jupyter-pluto-proxy \
     && pip install git+https://github.com/illumidesk/jupyter-pgweb-proxy.git \
-    && conda install nb_conda_kernels \
-    && julia -e 'import Pkg; Pkg.update(); Pkg.add("Pluto")' \
+    && conda install --yes nb_conda_kernels \
+    && ( julia -e 'import Pkg; Pkg.update(); Pkg.add("Pluto")' || true; ) \
     && chmod -R go+rx "${CONDA_DIR}/share/jupyter" \
     && rm -rf "${HOME}/.local" \
-    && fix-permissions "${JULIA_PKGDIR}" "${CONDA_DIR}/share/jupyter" \
+    && fix-permissions "${CONDA_DIR}/share/jupyter" \
+    && ([ ! -d "${JULIA_PKGDIR}" ] || fix-permissions "${JULIA_PKGDIR}") \
     && jupyter serverextension enable --py jupyter_server_proxy \
     && jupyter labextension install @jupyterlab/server-proxy \
     && jupyter lab build \

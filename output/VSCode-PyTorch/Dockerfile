@@ -1,3 +1,13 @@
+
+###############################
+###  .tmp/PyTorch.Dockerfile
+###############################
+
+
+###############################
+###  docker-bits/0_CPU.Dockerfile
+###############################
+
 ARG BASE_VERSION=42f4c82a07ff
 FROM jupyter/datascience-notebook:$BASE_VERSION
 
@@ -7,6 +17,10 @@ ENV PATH="/home/jovyan/.local/bin/:${PATH}"
 RUN apt-get update --yes \
     && apt-get install --yes language-pack-fr \
     && rm -rf /var/lib/apt/lists/*
+
+###############################
+###  docker-bits/1_CUDA-11.0.Dockerfile
+###############################
 
 # Cuda stuff for v11.0
 
@@ -89,6 +103,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/*
 
 
+###############################
+###  docker-bits/2_PyTorch.Dockerfile
+###############################
+
 # Install PyTorch
 RUN conda config --set channel_priority false && \
     conda create -n torch python=3.7 && \
@@ -109,6 +127,9 @@ RUN conda config --set channel_priority false && \
 #     'pyyaml' \
 #     'setuptools' \
 
+###############################
+###  docker-bits/3_Kubeflow.Dockerfile
+###############################
 
 RUN pip --no-cache-dir install --quiet \
       'kfp==1.0.0' \
@@ -126,6 +147,10 @@ RUN pip --no-cache-dir install --quiet \
 RUN pip --no-cache-dir install --quiet \
       'fire==0.3.1' \
       'git+https://github.com/kubeflow/pipelines@1d86111d8f152d3ed7506ea59cee1bfbc28abbf9#egg=kfp-azure-databricks&subdirectory=samples/contrib/azure-samples/kfp-azure-databricks'
+
+###############################
+###  docker-bits/4_CLI.Dockerfile
+###############################
 
 USER root
 
@@ -185,6 +210,10 @@ RUN curl -LO "${KUBECTL_URL}" \
 # Have to use the zsh-installer in the entrypoint!
 COPY helpers.zsh /tmp/helpers.zsh
 
+###############################
+###  docker-bits/5_DB-Drivers.Dockerfile
+###############################
+
 # ODBC drivers
 RUN apt-get update && \
     apt-get install -y alien unixodbc unixodbc-dev && \
@@ -201,6 +230,10 @@ RUN \
   unzip pgweb_linux_amd64.zip -d /usr/bin && \
   mv /usr/bin/pgweb_linux_amd64 /usr/bin/pgweb && \
   rm -f pgweb_linux_amd64.zip
+
+###############################
+###  docker-bits/6_VSCode.Dockerfile
+###############################
 
 USER ${NB_USER}
 
@@ -240,11 +273,12 @@ RUN pip install jupyter-server-proxy \
     && pip install git+https://github.com/blairdrummond/vscode-binder \
     && pip install git+https://github.com/illumidesk/jupyter-pluto-proxy \
     && pip install git+https://github.com/illumidesk/jupyter-pgweb-proxy.git \
-    && conda install nb_conda_kernels \
-    && julia -e 'import Pkg; Pkg.update(); Pkg.add("Pluto")' \
+    && conda install --yes nb_conda_kernels \
+    && ( julia -e 'import Pkg; Pkg.update(); Pkg.add("Pluto")' || true; ) \
     && chmod -R go+rx "${CONDA_DIR}/share/jupyter" \
     && rm -rf "${HOME}/.local" \
-    && fix-permissions "${JULIA_PKGDIR}" "${CONDA_DIR}/share/jupyter" \
+    && fix-permissions "${CONDA_DIR}/share/jupyter" \
+    && ([ ! -d "${JULIA_PKGDIR}" ] || fix-permissions "${JULIA_PKGDIR}") \
     && jupyter serverextension enable --py jupyter_server_proxy \
     && jupyter labextension install @jupyterlab/server-proxy \
     && jupyter lab build \
@@ -261,6 +295,10 @@ COPY nginx/*        /etc/nginx/
 ENV DEFAULT_JUPYTER_URL=/lab
 ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/statcan/jupyter-notebooks
 
+###############################
+###  docker-bits/∞_CMD.Dockerfile
+###############################
+
 # Configure container startup
 
 WORKDIR /home/$NB_USER
@@ -269,4 +307,3 @@ COPY start-custom.sh /usr/local/bin/
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]
 CMD ["start-custom.sh"]
-

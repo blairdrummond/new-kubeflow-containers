@@ -10,9 +10,8 @@ COMMIT := 42f4c82a07ff
 Tensorflow-CUDA := 11.1
 PyTorch-CUDA    := 11.0
 
-# Concatenate files, but add a newline between them.
-# https://stackoverflow.com/questions/8183191/concatenating-files-and-insert-new-line-in-between-files
-CAT := sed -e '$$s/$$/\n/' -s
+# https://stackoverflow.com/questions/5917413/concatenate-multiple-files-but-include-filename-as-section-headers
+CAT := awk '(FNR==1){print "\n\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\n\#\#\#  " FILENAME "\n\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\n"}1'
 SRC := docker-bits
 RESOURCES := resources
 OUT := output
