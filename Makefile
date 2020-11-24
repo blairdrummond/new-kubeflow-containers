@@ -66,7 +66,7 @@ PyTorch Tensorflow: .output
 	> $(TMP)/$@.Dockerfile
 
 Spark CPU: .output
-	cp $(SRC)/0_$@.Dockerfile $(TMP)/$@.Dockerfile
+	$(CAT) $(SRC)/0_$@.Dockerfile > $(TMP)/$@.Dockerfile
 
 
 #########################################

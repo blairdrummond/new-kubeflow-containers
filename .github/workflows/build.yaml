@@ -80,9 +80,9 @@ jobs:
         docker push $REGISTRY/$IMAGE_NAME:${GITHUB_REF#refs/*/}
         cd -
 
-    # Scan image for vulnerabilities
-    - uses: Azure/container-scan@v0
-      with:
-        image-name: ${{ env.REGISTRY }}/base-notebook-cpu:${{ github.sha }}
-        severity-threshold: CRITICAL
-        run-quality-checks: false
+    # # Scan image for vulnerabilities
+    # - uses: Azure/container-scan@v0
+    #   with:
+    #     image-name: ${{ env.REGISTRY }}/base-notebook-cpu:${{ github.sha }}
+    #     severity-threshold: CRITICAL
+    #     run-quality-checks: false
