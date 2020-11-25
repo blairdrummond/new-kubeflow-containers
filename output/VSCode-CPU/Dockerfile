@@ -179,9 +179,6 @@ RUN pip install jupyter-server-proxy \
     && fix-permissions /home/$NB_USER \
     && echo "VSCode installed."
 
-COPY landing_page/* /usr/share/nginx/html/
-COPY nginx/*        /etc/nginx/
-
 ENV DEFAULT_JUPYTER_URL=/lab
 ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/statcan/jupyter-notebooks
 

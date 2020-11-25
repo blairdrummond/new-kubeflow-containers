@@ -95,9 +95,9 @@ jobs:
         echo "       $REGISTRY/$IMAGE_NAME:${{ github.sha }} $REGISTRY/$IMAGE_NAME:latest"
         cd -
 
-    # # Scan image for vulnerabilities
-    # - uses: Azure/container-scan@v0
-    #   with:
-    #     image-name: ${{ env.REGISTRY }}/base-notebook-cpu:${{ github.sha }}
-    #     severity-threshold: CRITICAL
-    #     run-quality-checks: false
+    # Scan image for vulnerabilities
+    - uses: Azure/container-scan@v0
+      with:
+        image-name: $REGISTRY/$IMAGE_NAME:${{ github.sha }}
+        severity-threshold: CRITICAL
+        run-quality-checks: false
