@@ -45,7 +45,7 @@ get-commit:
 
 generate-CUDA:
 	bash scripts/get-nvidia-stuff.sh $(TensorFlow-CUDA) > $(SRC)/1_CUDA-$(TensorFlow-CUDA).Dockerfile
-	bash scripts/get-nvidia-stuff.sh $(TensorFlow-CUDA) > $(SRC)/1_CUDA-$(TensorFlow-CUDA).Dockerfile
+	bash scripts/get-nvidia-stuff.sh $(PyTorch-CUDA)    > $(SRC)/1_CUDA-$(PyTorch-CUDA).Dockerfile
 
 generate-Spark:
 	bash scripts/get-spark-stuff.sh --commit $(COMMIT)  > $(SRC)/2_Spark.Dockerfile
@@ -56,8 +56,6 @@ generate-Spark:
 #############################
 
 # Configure the "Bases".
-#
-# NOTE: At the time of writing, CPU is an alias for Spark.
 PyTorch Tensorflow: .output
 	$(CAT) \
 		$(SRC)/0_CPU.Dockerfile \
